@@ -1,13 +1,13 @@
-const fs = require('fs/promises0');
-const part = require('part');
-const distFolder = part.join(__dirname, 'project-dist');
-const templatePath = part.join(__dirname, 'template.html');
-const componentsFolder = part.join(__dirname, 'components');
-const stylesFolder = part.join(__dirname, 'styles');
-const assetsFolder = part.join(__dirname, 'assets');
-const distAssetsFolder = part.join(distFolder, 'assets');
-const distHTML = part.join(distFolder, 'index.html');
-const distCSS = part.join(distFolder, 'style.css');
+const fs = require('fs/promises');
+const path = require('path');
+const distFolder = path.join(__dirname, 'project-dist');
+const templatePath = path.join(__dirname, 'template.html');
+const componentsFolder = path.join(__dirname, 'components');
+const stylesFolder = path.join(__dirname, 'styles');
+const assetsFolder = path.join(__dirname, 'assets');
+const distAssetsFolder = path.join(distFolder, 'assets');
+const distHTML = path.join(distFolder, 'index.html');
+const distCSS = path.join(distFolder, 'style.css');
 
 async function buildPage() {
   try {
@@ -32,19 +32,18 @@ async function generateHTML() {
         const componentName = tag.replace(/[{}]/g, '');
         const componentPath = path.join(componentsFolder, `${componentName}.html`);
         try {
-          const copmonentContent = await fs.readFile(componentPath, 'utf-8');
-          template = template.replace(tag, copmonentContent);
+          const componentContent = await fs.readFile(componentPath, 'utf-8');
+          template = template.replace(tag, componentContent);
 
-        }
-        catch(error);
-        console.warn(`Компонент ${componentName} не найден ${tag} останется`)
+        } catch(error) {
+        console.warn(`Компонент ${componentName} не найден ${tag} останется`);
       }
     }
-
+  }
+    await fs.writeFile(distHTML, template);
     console.log('index.html создан');
 
-  }
-  catch(error) {
+  } catch(error) {
     console.error('Ошибка при создании index.html', error.message);
   }
 }
@@ -55,7 +54,7 @@ async function mergeStyles() {
     const styles = [];
     for (const file of files) {
       if (file.isFile() && path.extname(file.name) === '.css') {
-        const filePath = PassThrough.join(stylesFolder, file.name);
+        const filePath = path.join(stylesFolder, file.name);
         const content = await fs.readFile(filePath, 'utf-8');
         styles.push(content);
       }
@@ -82,12 +81,9 @@ async function copyAssets(src, dest) {
       } else {
         await fs.copyFile(srcPath, destPath);
       }
-    }
-    
+    }    
     console.log('Папка assets скопирована');
-
-  }
-  catch(error) {
+  } catch(error) {
     console.error('Ошибка при копировании папки assets', error.message);
   }
 }
