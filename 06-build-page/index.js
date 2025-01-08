@@ -15,7 +15,7 @@ async function buildPage() {
     await generateHTML();
     await mergeStyles();
     await copyAssets(assetsFolder, distAssetsFolder);
-
+    console.log('Папка assets скопирована');
     console.log('Страница успешно собрана');
   }
   catch(error) {
@@ -59,9 +59,9 @@ async function mergeStyles() {
         styles.push(content);
       }
     }
-    
+    await fs.writeFile(distCSS, styles.join('\n'));
     console.log('style.css создан');
-
+    // console.log('Содержимое стилей:', styles.join('\n'));
   }
   catch(error) {
     console.error('Ошибка при создании style.css', error.message);
@@ -82,9 +82,9 @@ async function copyAssets(src, dest) {
         await fs.copyFile(srcPath, destPath);
       }
     }    
-    console.log('Папка assets скопирована');
   } catch(error) {
     console.error('Ошибка при копировании папки assets', error.message);
+    return;
   }
 }
 
